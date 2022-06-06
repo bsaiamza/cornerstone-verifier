@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cornerstone-verifier
+  namespace: cornerstone-verifier
+spec:
+  type: ClusterIP         # Default type (ClusterIP), NodePort, LoadBalancer
+  selector:
+    app: cornerstone-verifier
+  ports:
+    - name: server-port
+      port: 8280          #Agent Admin port
+      targetPort: 8280
+      protocol: TCP
+
+# kubectl port-forward service/cornerstone-verifier 8280:8280 -n cornerstone-verifier
+# kubectl port-forward deployment.apps/cornerstone-verifier 8280:8280 -n cornerstone-verifier
+
+# localhost:8280/ 
+

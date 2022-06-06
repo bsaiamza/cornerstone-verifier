@@ -1,0 +1,20 @@
+#
+# ./manage start 172.16.10.29 "LEDGER_INSTANCE_NAME=My Iamza-sandbox" WEB_SERVER_HOST_PORT=9000
+#
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cornerstone-verifier-agent-configmap
+  namespace: cornerstone-verifier
+data:
+  # Server Variables
+  ACAPY_ADMIN_INSECURE_MODE: "true"
+  ACAPY_AUTO_PROVISION: "true"
+  ACAPY_DEBUG_CONNECTIONS: "true"
+  ACAPY_ENDPOINT: "https://verifier-agent.iamza-sandbox.com"
+  ACAPY_LABEL: "Iamza Cornerstone Verifier"
+  ACAPY_GENESIS_URL: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_builder_genesis"
+  ACAPY_LOG_LEVEL: "info"
+  ACAPY_ADMIN: "8001" # http
+  ACAPY_INBOUND_TRANSPORT: "8000" # http
