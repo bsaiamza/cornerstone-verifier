@@ -15,6 +15,12 @@ data:
   ACAPY_ENDPOINT: "https://verifier-agent.iamza-sandbox.com"
   ACAPY_LABEL: "Iamza Cornerstone Verifier"
   ACAPY_GENESIS_URL: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_builder_genesis"
+  ACAPY_WALLET_NAME: "issuer_wallet"
+  ACAPY_WALLET_KEY: "issuer_secret"
+  ACAPY_WALLET_TYPE: "indy"
+  ACAPY_WALLET_STORAGE_TYPE: postgres_storage
+  ACAPY_WALLET_STORAGE_CONFIG: '{"url":"postgres-nodeport-svc.postgres.svc.cluster.local:5432","wallet_scheme":"DatabasePerWallet"}'
+  ACAPY_WALLET_STORAGE_CREDS: '{"account":"iamza","password":"test123","admin_account":"iamza","admin_password":"test123"}'
   ACAPY_LOG_LEVEL: "info"
   ACAPY_ADMIN: "8001" # http
   ACAPY_INBOUND_TRANSPORT: "8000" # http
