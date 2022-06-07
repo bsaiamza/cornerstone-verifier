@@ -1,10 +1,12 @@
 package main
 
 import (
-	"cornerstone_verifier/api/v1"
+	api "cornerstone_verifier/api/v1"
+	acapy "cornerstone_verifier/pkg/acapy_client"
 	"cornerstone_verifier/pkg/config"
 	"cornerstone_verifier/pkg/log"
 	"cornerstone_verifier/pkg/server"
+	"cornerstone_verifier/pkg/util"
 )
 
 func main() {
@@ -12,9 +14,13 @@ func main() {
 
 	serverAddress := config.GetServerAddress()
 
+	acapyClient := acapy.NewClient(config.GetAcapyURL())
+
+	cache := util.NewBigCache()
+
 	srv := server.NewServer().
 		WithAddress(serverAddress).
-		WithRouter(api.NewRouter(config)).
+		WithRouter(api.NewRouter(config, acapyClient, cache)).
 		WithErrLogger(log.ServerError)
 
 	go func() {

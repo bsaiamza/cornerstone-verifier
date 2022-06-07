@@ -31,6 +31,16 @@ func getEnv(key string) string {
 	return os.Getenv(key)
 }
 
+// GetAcapyURL returns the Acapy URL.
+func (c *Config) GetAcapyURL() string {
+	return getEnv("ACAPY_URL")
+}
+
+// GetCredDefID returns the Cred Def ID.
+func (c *Config) GetCredDefID() string {
+	return getEnv("CRED_DEF_ID")
+}
+
 // GetClientURL returns the client URL.
 func (c *Config) GetClientURL() string {
 	return getEnv("CLIENT_URL")

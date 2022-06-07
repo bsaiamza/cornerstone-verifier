@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  background-color: #eee;
+}
+
+/*-----------*/
+/* NAVLINKS */
+/*-----------*/
+
+/* Specific styles for non-active links */
+.link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-active {
+  text-decoration: none;
+  color: #faa61a;
+}
+
+.link-active svg {
+  color: #faa61a;
+}
+
+/* JSON text display */
+.json-text {
+  margin-left: 1rem;
+}

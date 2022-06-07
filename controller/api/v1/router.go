@@ -1,18 +1,47 @@
 package api
 
 import (
+	"embed"
+	"fmt"
+	"io/fs"
 	"net/http"
 
+	acapy "cornerstone_verifier/pkg/acapy_client"
 	"cornerstone_verifier/pkg/config"
+	"cornerstone_verifier/pkg/util"
 )
 
-func NewRouter(config *config.Config) *http.ServeMux {
+//go:embed build
+var embeddedFiles embed.FS
+
+func NewRouter(config *config.Config, acapyClient *acapy.Client, cache *util.BigCache) *http.ServeMux {
 	r := http.NewServeMux()
 
 	apiBaseURL := config.GetAPIBaseURL()
 
 	// health
-	r.HandleFunc(apiBaseURL+"/cornerstone/issuer/health", health(config))
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/health", health(config))
+	// connection
+	r.HandleFunc(apiBaseURL+"/cornerstone/issuer/connection/invitation", invitation(config, acapyClient))
+	r.HandleFunc(apiBaseURL+"/cornerstone/issuer/connections", listConnections(config, acapyClient))
+	// proof
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/topic/connections/", presentProof(config, acapyClient, cache))
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/proof", prepareProofData(config, acapyClient, cache))
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/presentations", listProofRecords(config, acapyClient))
+
+	r.Handle("/", http.FileServer(getFileSystem()))
 
 	return r
+}
+
+func getFileSystem() http.FileSystem {
+	// Get the build subdirectory as the
+	// root directory so that it can be passed
+	// to the http.FileServer
+	fsys, err := fs.Sub(embeddedFiles, "build")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return http.FS(fsys)
 }

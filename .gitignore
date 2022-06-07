@@ -19,3 +19,12 @@
 .idea/
 venv/
 .vscode/
+
+# Cornerstone Verifier
+# Files
+controller/*.log
+controller/.vscode/
+
+# Folders
+controller/bin
+
