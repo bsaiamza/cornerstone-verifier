@@ -16,6 +16,7 @@ const Navigation = lazy(() => import('./components/Navigation'))
 const ConnectionPage = lazy(() => import('./pages/Connection'))
 const HomePage = lazy(() => import('./pages/Home'))
 const NotFoundPage = lazy(() => import('./pages/NotFound'))
+const PresentationRecordsPage = lazy(() => import('./pages/Records'))
 const VerifyPage = lazy(() => import('./pages/Verify'))
 
 function App() {
@@ -27,7 +28,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="connections" element={<ConnectionPage />} />
-          <Route path="verify" element={<VerifyPage />} />
+          <Route path="verify-credential" element={<VerifyPage />} />
+          <Route path="records" element={<PresentationRecordsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
 

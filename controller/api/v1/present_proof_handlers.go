@@ -1,8 +1,10 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
+	"os"
 	"strconv"
 
 	acapy "cornerstone_verifier/pkg/acapy_client"
@@ -11,16 +13,18 @@ import (
 	"cornerstone_verifier/pkg/models"
 	"cornerstone_verifier/pkg/server"
 	"cornerstone_verifier/pkg/util"
+
+	"github.com/skip2/go-qrcode"
 )
 
-func prepareProofData(config *config.Config, acapyClient *acapy.Client, cache *util.BigCache) http.HandlerFunc {
+func displayProofRequest(config *config.Config, acapyClient *acapy.Client, cache *util.BigCache) http.HandlerFunc {
 	mdw := []server.Middleware{
 		server.NewLogRequest,
 	}
 
-	return server.ChainMiddleware(prepareProofDataHandler(config, acapyClient, cache), mdw...)
+	return server.ChainMiddleware(displayProofRequestHandler(config, acapyClient, cache), mdw...)
 }
-func prepareProofDataHandler(config *config.Config, acapyClient *acapy.Client, cache *util.BigCache) http.HandlerFunc {
+func displayProofRequestHandler(config *config.Config, acapyClient *acapy.Client, cache *util.BigCache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
 		header.Add("Access-Control-Allow-Origin", config.GetClientURL())
@@ -45,9 +49,116 @@ func prepareProofDataHandler(config *config.Config, acapyClient *acapy.Client, c
 
 		defer r.Body.Close()
 
-		log.Info.Println("Preparing proof request data...")
+		log.Info.Println("Creating proof request...")
 
-		var data models.PrepareProofPresentationData
+		var data models.ProofRequestData
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			log.Error.Printf("Failed to decode credential data: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Res{
+				"success": false,
+				"msg":     "Failed to decode credential data: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		// Step 1: Create invitation
+		request := models.CreateInvitationRequest{}
+
+		alias := r.URL.Query().Get("alias")
+		autoAccept, _ := strconv.ParseBool(r.URL.Query().Get("auto_accept"))
+		multiuse, _ := strconv.ParseBool(r.URL.Query().Get("multi_use"))
+		public, _ := strconv.ParseBool(r.URL.Query().Get("public"))
+
+		queryParams := models.CreateInvitationParams{
+			Alias:      alias,
+			AutoAccept: autoAccept,
+			MultiUse:   multiuse,
+			Public:     public,
+		}
+
+		invitation, err := acapyClient.CreateInvitation(request, &queryParams)
+		if err != nil {
+			log.Error.Printf("Failed to prepare proof data: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Res{
+				"success": false,
+				"msg":     "Failed to prepare proof data: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		// Step 2: Cache user data
+		prepareProofData := models.ProofRequestData{
+			IDNumber:       data.IDNumber,
+			Surname:        data.Surname,
+			Forenames:      data.Forenames,
+			Gender:         data.Gender,
+			DateOfBirth:    data.DateOfBirth,
+			CountryOfBirth: data.CountryOfBirth,
+		}
+
+		err = cache.UpdateDataCache(invitation.Invitation.RecipientKeys[0], prepareProofData)
+		if err != nil {
+			log.Error.Printf("Failed to cache presentation data: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Res{
+				"success": false,
+				"msg":     "Failed to cache presentation data: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		log.Info.Println("Proof request created!")
+
+		w.WriteHeader(http.StatusOK)
+		res := server.Res{
+			"success":      true,
+			"proofRequest": invitation.InvitationURL,
+		}
+		json.NewEncoder(w).Encode(res)
+	}
+}
+
+func emailProofRequest(config *config.Config, acapyClient *acapy.Client, cache *util.BigCache) http.HandlerFunc {
+	mdw := []server.Middleware{
+		server.NewLogRequest,
+	}
+
+	return server.ChainMiddleware(emailProofRequestHandler(config, acapyClient, cache), mdw...)
+}
+func emailProofRequestHandler(config *config.Config, acapyClient *acapy.Client, cache *util.BigCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		header := w.Header()
+		header.Add("Access-Control-Allow-Origin", config.GetClientURL())
+		header.Add("Access-Control-Allow-Methods", "POST, OPTIONS")
+		header.Add("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != http.MethodPost {
+			log.Warning.Print("Incorrect request method!")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			res := server.Res{
+				"success": false,
+				"msg":     "Warning: Incorrect request method!",
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		defer r.Body.Close()
+
+		log.Info.Println("Create proof request...")
+
+		var data models.ProofRequestData
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			log.Error.Printf("Failed to decode credential data: %s", err)
@@ -88,26 +199,27 @@ func prepareProofDataHandler(config *config.Config, acapyClient *acapy.Client, c
 		}
 
 		// Step 2: Generate qr code
-		// qrCodePng, err := qrcode.Encode(invitation.InvitationURL, qrcode.Medium, 256)
-		// if err != nil {
-		// 	log.Warning.Print("Failed to create QR code: ", err)
-		// 	w.WriteHeader(http.StatusInternalServerError)
-		// 	res := server.Res{
-		// 		"success": false,
-		// 		"msg":     "Failed to create QR code: " + err.Error(),
-		// 	}
-		// 	json.NewEncoder(w).Encode(res)
-		// 	return
-		// }
+		qrCodePng, err := qrcode.Encode(invitation.InvitationURL, qrcode.Medium, 256)
+		if err != nil {
+			log.Warning.Print("Failed to create QR code: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Res{
+				"success": false,
+				"msg":     "Failed to create QR code: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
 
 		// Step 3: Cache user data
-		prepareProofData := models.PrepareProofPresentationData{
+		prepareProofData := models.ProofRequestData{
 			IDNumber:       data.IDNumber,
 			Surname:        data.Surname,
 			Forenames:      data.Forenames,
 			Gender:         data.Gender,
 			DateOfBirth:    data.DateOfBirth,
 			CountryOfBirth: data.CountryOfBirth,
+			Email:          data.Email,
 		}
 
 		err = cache.UpdateDataCache(invitation.Invitation.RecipientKeys[0], prepareProofData)
@@ -123,47 +235,32 @@ func prepareProofDataHandler(config *config.Config, acapyClient *acapy.Client, c
 		}
 
 		// Step 4: Send email
-
-		// var prefix string
-		// if data.Gender == "Female" {
-		// 	prefix = "Ms/Mrs "
-		// }
-		// if data.Gender == "Male" {
-		// 	prefix = "Mr "
-		// }
-
-		// err = util.SendEmail(prefix+data.Surname, data.Email, invitation.Invitation.RecipientKeys[0], qrCodePng)
-		// if err != nil {
-		// 	log.Warning.Print("Failed to send credential email: ", err)
-		// 	w.WriteHeader(http.StatusInternalServerError)
-		// 	res := server.Res{
-		// 		"success": false,
-		// 		"msg":     "Failed to send credential email: " + err.Error(),
-		// 	}
-		// 	json.NewEncoder(w).Encode(res)
-		// 	return
-		// }
-
-		// err = os.Remove("./" + invitation.Invitation.RecipientKeys[0] + ".png")
-		// if err != nil {
-		// 	log.Warning.Print("Failed to remove QR code: ", err)
-		// w.WriteHeader(http.StatusInternalServerError)
-		// res := server.Res{
-		// 	"success": false,
-		// 	"msg":     "Failed to remove QR code: " + err.Error(),
-		// }
-		// json.NewEncoder(w).Encode(res)
-		// }
-
-		log.Info.Println("Proof data prepared!")
-
-		// w.Write(qrCodePng)
-		// w.Header().Set("Content-Type", "image/png")
-		res := server.Res{
-			"success":      true,
-			"proofRequest": invitation.InvitationURL,
+		err = util.SendProofRequestEmail(data.Email, invitation.Invitation.RecipientKeys[0], qrCodePng)
+		if err != nil {
+			log.Warning.Print("Failed to send credential email: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Res{
+				"success": false,
+				"msg":     "Failed to send credential email: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
 		}
-		json.NewEncoder(w).Encode(res)
+
+		err = os.Remove("./" + invitation.Invitation.RecipientKeys[0] + ".png")
+		if err != nil {
+			log.Warning.Print("Failed to remove QR code: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Res{
+				"success": false,
+				"msg":     "Failed to remove QR code: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+		}
+
+		log.Info.Println("Proof request created and sent via email!")
+
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -224,6 +321,13 @@ func presentProofHandler(config *config.Config, acapyClient *acapy.Client, cache
 				json.NewEncoder(w).Encode(res)
 				return
 			}
+		}
+
+		if request.State == "active" {
+			credDefID := config.GetCredDefID()
+			if credDefID == "" {
+				credDefID = "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2"
+			}
 
 			proofData, err := cache.ReadDataCache(request.InvitationKey)
 			if err != nil {
@@ -237,129 +341,154 @@ func presentProofHandler(config *config.Config, acapyClient *acapy.Client, cache
 				return
 			}
 
-			credDefID := config.GetCredDefID()
-			if credDefID == "" {
-				credDefID = "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2"
-			}
-
-			var idProof models.The0___UUID
-			var forenamesProof models.The0___UUID
-			var surnameProof models.The0___UUID
-			var genderProof models.The0___UUID
-			var dobProof models.The0___UUID
-			var cobProof models.The0___UUID
+			var idProof interface{}
+			var namesProof interface{}
+			var surnameProof interface{}
+			var genderProof interface{}
+			var dobProof interface{}
+			var cobProof interface{}
 
 			if proofData.IDNumber {
-				idProof = models.The0___UUID{
-					Name: "IDNumber",
-					Restrictions: []models.Restriction{
+				idProof = map[string]interface{}{
+					"name": "IDNumber",
+					"restrictions": []map[string]interface{}{
 						{
-							CredDefID: "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2",
+							"cred_def_id": credDefID,
 						},
 					},
 				}
+			} else {
+				idProof = nil
 			}
 
 			if proofData.Forenames {
-				forenamesProof = models.The0___UUID{
-					Name: "Forenames",
-					Restrictions: []models.Restriction{
+				namesProof = map[string]interface{}{
+					"name": "Forenames",
+					"restrictions": []map[string]interface{}{
 						{
-							CredDefID: "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2",
+							"cred_def_id": credDefID,
 						},
 					},
 				}
+			} else {
+				namesProof = nil
 			}
 
 			if proofData.Surname {
-				surnameProof = models.The0___UUID{
-					Name: "Surname",
-					Restrictions: []models.Restriction{
+				surnameProof = map[string]interface{}{
+					"name": "Surname",
+					"restrictions": []map[string]interface{}{
 						{
-							CredDefID: "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2",
+							"cred_def_id": credDefID,
 						},
 					},
 				}
+			} else {
+				surnameProof = nil
 			}
 
 			if proofData.Gender {
-				genderProof = models.The0___UUID{
-					Name: "Gender",
-					Restrictions: []models.Restriction{
+				genderProof = map[string]interface{}{
+					"name": "Gender",
+					"restrictions": []map[string]interface{}{
 						{
-							CredDefID: "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2",
+							"cred_def_id": credDefID,
 						},
 					},
 				}
+			} else {
+				genderProof = nil
 			}
 
 			if proofData.DateOfBirth {
-				dobProof = models.The0___UUID{
-					Name: "DateOfBirth",
-					Restrictions: []models.Restriction{
+				dobProof = map[string]interface{}{
+					"name": "DateOfBirth",
+					"restrictions": []map[string]interface{}{
 						{
-							CredDefID: "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2",
+							"cred_def_id": credDefID,
 						},
 					},
 				}
+			} else {
+				dobProof = nil
 			}
 
 			if proofData.CountryOfBirth {
-				cobProof = models.The0___UUID{
-					Name: "CountryOfBirth",
-					Restrictions: []models.Restriction{
+				cobProof = map[string]interface{}{
+					"name": "CountryOfBirth",
+					"restrictions": []map[string]interface{}{
 						{
-							CredDefID: "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2",
+							"cred_def_id": credDefID,
 						},
 					},
 				}
+			} else {
+				cobProof = nil
 			}
 
-			sendProofRequest := models.CreateProofPresentationRequest{
-				Comment:      "Please provide proof you are who you say you are",
+			// values := &models.ProofRequest{
+			// 	Comment:      "Proof Request",
+			// 	ConnectionID: request.ConnectionID,
+			// 	PresentationRequest: models.PresentationRequest{
+			// 		Indy: models.Indy{
+			// 			Name:    "Proof of Identity",
+			// 			Version: "1.0",
+			// 			RequestedAttributes: models.RequestedAttributes{
+			// 				idProof,
+			// 				namesProof,
+			// 				surnameProof,
+			// 				genderProof,
+			// 				dobProof,
+			// 				cobProof,
+			// 			},
+			// 			RequestedPredicates: models.RequestedPredicates{},
+			// 		},
+			// 	},
+			// }
+
+			values := &models.ProofRequestV1{
+				Comment:      "Proof Request",
 				ConnectionID: request.ConnectionID,
-				PresentationRequest: models.PresentationRequest{
-					Indy: models.Indy{
-						Name:    "Proof of Identity",
-						Version: "1.0",
-						RequestedAttributes: []models.RequestedAttributes{
-							{
-								The0_IDNumberUUID: idProof,
-							},
-							{
-								The0_ForenamesUUID: forenamesProof,
-							},
-							{
-								The0_SurnameUUID: surnameProof,
-							},
-							{
-								The0_GenderUUID: genderProof,
-							},
-							{
-								The0_DateOfBirthUUID: dobProof,
-							},
-							{
-								The0_CountryOfBirthUUID: cobProof,
-							},
-						},
-						RequestedPredicates: []string{},
+				PresentationRequest: models.PresentationRequestV1{
+					Name:    "Proof of Identity",
+					Version: "1.0",
+					RequestedAttributes: models.RequestedAttributes{
+						idProof,
+						namesProof,
+						surnameProof,
+						genderProof,
+						dobProof,
+						cobProof,
 					},
+					RequestedPredicates: models.RequestedPredicates{},
 				},
 			}
 
-			_, err = acapyClient.CreateProofPresentation(sendProofRequest)
+			json_data, err := json.Marshal(values)
 			if err != nil {
-				log.Error.Printf("Failed to create proof presentation: %s", err)
+				log.Error.Printf("Failed to marshal proof request: %s", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				res := server.Res{
 					"success": false,
-					"msg":     "Failed to create proof presentation: " + err.Error(),
+					"msg":     "Failed to marshal proof request: " + err.Error(),
 				}
 				json.NewEncoder(w).Encode(res)
 				return
 			}
 
-			cache.DeleteDataCache(request.InvitationKey)
+			resp, err := http.Post(config.GetAcapyURL()+"/present-proof/send-request", "application/json", bytes.NewBuffer(json_data))
+			// resp, err := http.Post(config.GetAcapyURL()+"/present-proof-2.0/send-request", "application/json", bytes.NewBuffer(json_data))
+			if err != nil {
+				log.Error.Printf("Failed to send proof request: %s", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				res := server.Res{
+					"success": false,
+					"msg":     "Failed to send proof request: " + err.Error(),
+				}
+				json.NewEncoder(w).Encode(res)
+				return
+			}
+			defer resp.Body.Close()
 
 			log.Info.Println("Proof request sent successfully!")
 

@@ -1,0 +1,53 @@
+{
+  "comment": "Please provide proof of ID",
+  "connection_id": "49674305-30ed-41dc-82be-eaf66d1254cb",
+  "presentation_request": {
+    "indy": {
+      "name": "Proof of Identification",
+      "version": "1.0",
+      "requested_attributes": {
+        "0_IDNumber_uuid": {
+          "name": "IDNumber",
+          "restrictions": [
+            {
+              "cred_def_id": "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2"
+            }
+          ]
+        },
+        "0_Forenames_uuid": {
+          "name": "Forenames",
+          "restrictions": [
+            {
+              "cred_def_id": "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2"
+            }
+          ]
+        },
+        "0_Surname_uuid": {
+          "name": "Surname",
+          "restrictions": [
+            {
+              "cred_def_id": "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2"
+            }
+          ]
+        },
+        "0_DateOfBirth_uuid": {
+          "name": "DateOfBirth",
+          "restrictions": [
+            {
+              "cred_def_id": "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2"
+            }
+          ]
+        },
+        "0_CountryOfBirth_uuid": {
+          "name": "CountryOfBirth",
+          "restrictions": [
+            {
+              "cred_def_id": "BER7WwiAMK9igkiRjPYpEp:3:CL:40479:cornerstone_1.2"
+            }
+          ]
+        }
+      },
+      "requested_predicates": {}
+    }
+  }
+}

@@ -6,15 +6,15 @@ import (
 )
 
 // CreateProofPresentation sends a proof request.
-func (c *Client) CreateProofPresentation(request models.CreateProofPresentationRequest) (models.CreateProofPresentationResponse, error) {
-	var proofPresentation models.CreateProofPresentationResponse
-	err := c.post("/present-proof-2.0/send-request", nil, request, &proofPresentation)
-	if err != nil {
-		log.Error.Printf("Failed on ACA-py /present-proof-2.0/send-request: %s", err.Error())
-		return models.CreateProofPresentationResponse{}, err
-	}
-	return proofPresentation, nil
-}
+// func (c *Client) CreateProofPresentation(request models.CreateProofPresentationRequest) (models.CreateProofPresentationResponse, error) {
+// 	var proofPresentation models.CreateProofPresentationResponse
+// 	err := c.post("/present-proof-2.0/send-request", nil, request, &proofPresentation)
+// 	if err != nil {
+// 		log.Error.Printf("Failed on ACA-py /present-proof-2.0/send-request: %s", err.Error())
+// 		return models.CreateProofPresentationResponse{}, err
+// 	}
+// 	return proofPresentation, nil
+// }
 
 // ListProofRecords returns all proof exchange records.
 func (c *Client) ListProofRecords(params *models.ListProofRecordsParams) (models.ListProofRecordsResponse, error) {
@@ -30,7 +30,8 @@ func (c *Client) ListProofRecords(params *models.ListProofRecordsParams) (models
 		}
 	}
 
-	err := c.get("/present-proof-2.0/records", queryParams, &proofRecords)
+	err := c.get("/present-proof/records", queryParams, &proofRecords)
+	// err := c.get("/present-proof-2.0/records", queryParams, &proofRecords)
 	if err != nil {
 		log.Error.Printf("Failed on ACA-py /present-proof-2.0/records: %s", err.Error())
 		return models.ListProofRecordsResponse{}, err

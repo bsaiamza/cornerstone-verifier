@@ -1,21 +1,25 @@
 // components
+import BoxComponent from './Box'
 import Copyright from './Copyright'
 
 const Footer = () => {
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        right: 0,
-        backgroundColor: '#eee',
-        padding: '2rem',
-        marginTop: '5rem',
-        zIndex: '1',
-      }}
-    >
-      <Copyright />
-    </div>
+    <>
+      <BoxComponent
+        component="footer"
+        sx={{
+          position: 'fixed',
+          bottom: 0,
+          width: '100%',
+          backgroundColor: '#eee',
+          padding: '2rem',
+          boxShadow: '0px -1px 0px #ccc',
+          zIndex: '2',
+        }}
+      >
+        <Copyright />
+      </BoxComponent>
+    </>
   )
 }
 

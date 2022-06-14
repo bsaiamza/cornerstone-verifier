@@ -2,6 +2,7 @@
 import { Divider, Drawer } from '@mui/material'
 // mui5 icons
 import {
+  Article,
   FactCheck,
   FileCopy,
   Fingerprint,
@@ -84,7 +85,7 @@ const Sidebar = ({ handleCloseDrawer, openDrawer }) => {
         </NavLink>
 
         <NavLink
-          to="/verify"
+          to="/verify-credential"
           className={({ isActive }) =>
             openDrawer
               ? isActive
@@ -101,6 +102,28 @@ const Sidebar = ({ handleCloseDrawer, openDrawer }) => {
                 <FactCheck />
               </ListItemIconComponent>
               <ListItemTextComponent primary="Verify Credentials" />
+            </ListItemButtonComponent>
+          </ListItemComponent>
+        </NavLink>
+
+        <NavLink
+          to="/records"
+          className={({ isActive }) =>
+            openDrawer
+              ? isActive
+                ? 'link-active'
+                : 'link'
+              : isActive
+              ? 'link-active'
+              : 'link'
+          }
+        >
+          <ListItemComponent disablePadding>
+            <ListItemButtonComponent onClick={handleCloseDrawer}>
+              <ListItemIconComponent>
+                <Article />
+              </ListItemIconComponent>
+              <ListItemTextComponent primary="Records" />
             </ListItemButtonComponent>
           </ListItemComponent>
         </NavLink>

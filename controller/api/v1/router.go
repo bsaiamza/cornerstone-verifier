@@ -22,11 +22,12 @@ func NewRouter(config *config.Config, acapyClient *acapy.Client, cache *util.Big
 	// health
 	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/health", health(config))
 	// connection
-	r.HandleFunc(apiBaseURL+"/cornerstone/issuer/connection/invitation", invitation(config, acapyClient))
-	r.HandleFunc(apiBaseURL+"/cornerstone/issuer/connections", listConnections(config, acapyClient))
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/connection/invitation", invitation(config, acapyClient))
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/connections", listConnections(config, acapyClient))
 	// proof
 	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/topic/connections/", presentProof(config, acapyClient, cache))
-	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/proof", prepareProofData(config, acapyClient, cache))
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/proof", displayProofRequest(config, acapyClient, cache))
+	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/email-proof", emailProofRequest(config, acapyClient, cache))
 	r.HandleFunc(apiBaseURL+"/cornerstone/verifier/presentations", listProofRecords(config, acapyClient))
 
 	r.Handle("/", http.FileServer(getFileSystem()))

@@ -7,6 +7,7 @@ const GridComponent = ({
   justify,
   md,
   spacing,
+  sx,
   xs,
 }) => {
   return (
@@ -16,6 +17,7 @@ const GridComponent = ({
       justify={justify}
       md={md}
       spacing={spacing}
+      sx={sx}
       xs={xs}
     >
       {children}

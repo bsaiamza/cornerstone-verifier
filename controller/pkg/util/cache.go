@@ -130,7 +130,7 @@ func (bc *BigCache) Delete(id string) {
 	bc.data.Delete(dataKey(id))
 }
 
-func (bc *BigCache) UpdateDataCache(invitation_key string, data models.PrepareProofPresentationData) error {
+func (bc *BigCache) UpdateDataCache(invitation_key string, data models.ProofRequestData) error {
 	bs, err := json.Marshal(&data)
 	if err != nil {
 		return fmt.Errorf("marshal: %w", err)
@@ -139,20 +139,20 @@ func (bc *BigCache) UpdateDataCache(invitation_key string, data models.PreparePr
 	return bc.cornerstoneData.Set(dataKey(invitation_key), bs)
 }
 
-func (bc *BigCache) ReadDataCache(invitation_key string) (models.PrepareProofPresentationData, error) {
+func (bc *BigCache) ReadDataCache(invitation_key string) (models.ProofRequestData, error) {
 	bs, err := bc.cornerstoneData.Get(dataKey(invitation_key))
 	if err != nil {
 		if errors.Is(err, bigcache.ErrEntryNotFound) {
-			return models.PrepareProofPresentationData{}, err
+			return models.ProofRequestData{}, err
 		}
 
-		return models.PrepareProofPresentationData{}, fmt.Errorf("get: %w", err)
+		return models.ProofRequestData{}, fmt.Errorf("get: %w", err)
 	}
 
-	var cornerstoneData models.PrepareProofPresentationData
+	var cornerstoneData models.ProofRequestData
 	err = json.Unmarshal(bs, &cornerstoneData)
 	if err != nil {
-		return models.PrepareProofPresentationData{}, fmt.Errorf("unmarshal: %w", err)
+		return models.ProofRequestData{}, fmt.Errorf("unmarshal: %w", err)
 	}
 
 	return cornerstoneData, nil

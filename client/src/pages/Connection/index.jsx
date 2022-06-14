@@ -1,28 +1,19 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import MaterialTable from '@material-table/core'
-import {
-  Badge as CredentialIcon,
-  Refresh as RefreshIcon,
-} from '@mui/icons-material'
+import { Refresh as RefreshIcon } from '@mui/icons-material'
 import { toast } from 'react-toastify'
 // components
 import TypographyComponent from '../../components/Typography'
-import CredentialModal from './modal'
 
 const ConnectionsPage = () => {
   const [data, setData] = useState([])
-  const [open, setOpen] = useState(false)
-  const [connectionId, setConnectionId] = useState('')
-
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
 
   useEffect(() => {
-    let apiURL = '/api/v1/cornerstone/issuer/connections'
+    let apiURL = '/api/v1/cornerstone/verifier/connections'
 
     if (process.env.API_BASE_URL) {
-      apiURL = process.env.API_BASE_URL + '/cornerstone/issuer/connections'
+      apiURL = process.env.API_BASE_URL + '/cornerstone/verifier/connections'
     }
 
     if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
@@ -43,10 +34,10 @@ const ConnectionsPage = () => {
   }, [])
 
   const refreshConnections = async () => {
-    let apiURL = '/api/v1/cornerstone/issuer/connections'
+    let apiURL = '/api/v1/cornerstone/verifier/connections'
 
     if (process.env.API_BASE_URL) {
-      apiURL = process.env.API_BASE_URL + '/cornerstone/issuer/connections'
+      apiURL = process.env.API_BASE_URL + '/cornerstone/verifier/connections'
     }
 
     if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
@@ -77,14 +68,6 @@ const ConnectionsPage = () => {
       )
     }
   }
-
-  const renderModal = (
-    <CredentialModal
-      connectionId={connectionId}
-      handleClose={handleClose}
-      open={open}
-    />
-  )
 
   return (
     <div style={{ margin: '2rem' }}>
@@ -137,20 +120,11 @@ const ConnectionsPage = () => {
             isFreeAction: true,
             onClick: () => refreshConnections(),
           },
-          rowData => ({
-            icon: () => <CredentialIcon />,
-            tooltip: 'Issue Credential',
-            onClick: () => {
-              handleOpen()
-              setConnectionId(rowData.connection_id)
-            },
-          }),
         ]}
         options={{
           actionsColumnIndex: -1,
         }}
       />
-      {renderModal}
     </div>
   )
 }

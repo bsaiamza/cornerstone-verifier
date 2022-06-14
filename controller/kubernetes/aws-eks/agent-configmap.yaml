@@ -24,3 +24,5 @@ data:
   ACAPY_LOG_LEVEL: "info"
   ACAPY_ADMIN: "8001" # http
   ACAPY_INBOUND_TRANSPORT: "8000" # http
+  ACAPY_AUTO_VERIFY_PRESENTATION: "true"
+  ACAPY_WEBHOOK_URL: "https://verifier.iamza-sandbox.com/api/v1/cornerstone/verifier"

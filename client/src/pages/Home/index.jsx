@@ -1,7 +1,8 @@
 import { Divider } from '@mui/material'
+import { Link } from 'react-router-dom'
 // components
 import BoxComponent from '../../components/Box'
-// import CardComponent from '../../components/Card'
+import ButtonComponent from '../../components/Button'
 import GridComponent from '../../components/Grid'
 import TypographyComponent from '../../components/Typography'
 // images
@@ -25,6 +26,17 @@ const HomePage = () => {
             </TypographyComponent>
             <Divider />
           </BoxComponent>
+          <ButtonComponent variant="contained" sx={{ m: '2rem' }}>
+            <Link
+              to="verify-credential"
+              style={{
+                color: 'white',
+                textDecoration: 'none',
+              }}
+            >
+              Verify a Cornerstone Credential
+            </Link>
+          </ButtonComponent>
         </GridComponent>
         <GridComponent item xs={12} md={6}>
           <BoxComponent
