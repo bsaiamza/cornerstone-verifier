@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"iamza_verifier/pkg/log"
 	"iamza_verifier/pkg/models"
 )
@@ -53,4 +54,21 @@ func (c *Client) SendProofRequest(request models.ProofRequest) (models.SendProof
 		return models.SendProofRequestResponse{}, err
 	}
 	return proof, nil
+}
+
+func (c *Client) GetPresExRecord(presExID string) (models.Records, error) {
+	endpoint := fmt.Sprintf("/present-proof/records/%s", presExID)
+	var presExRecord models.Records
+
+	arg := models.AcapyGetRequest{
+		Endpoint: endpoint,
+		Response: &presExRecord,
+	}
+
+	err := c.get(arg)
+	if err != nil {
+		log.Error.Printf("Failed on ACA-py /present-proof/records/{pres_ex_id}: %s", err.Error())
+		return models.Records{}, err
+	}
+	return presExRecord, nil
 }

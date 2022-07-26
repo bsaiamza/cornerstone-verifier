@@ -91,7 +91,7 @@ func SendProofRequestByEmail(recipientEmail, qrImgName string, qrCode []byte) er
 	//New email simple html with inline and CC
 	email := mailV2.NewMSG()
 
-	email.SetFrom("no-reply@bankservafrica.com").
+	email.SetFrom("aws_iamzanet@bankservafrica.com").
 		AddTo(recipientEmail).
 		// AddCc("otherto@example.com").
 		SetSubject("Verify your Credential")
@@ -129,7 +129,7 @@ func SendNotificationEmail(recipientEmail, status string) error {
 					Hi
 				</p>
 				<p>
-					Please note that your Credential has been verified and the process was ` + status + `.
+					Please note that your Credential has been verified ` + status + `.
 				</p>
 				<p>
 					Regards
@@ -168,7 +168,7 @@ func SendNotificationEmail(recipientEmail, status string) error {
 	//New email simple html with inline and CC
 	email := mailV2.NewMSG()
 
-	email.SetFrom("no-reply@bankservafrica.com").
+	email.SetFrom("aws_iamzanet@bankservafrica.com").
 		AddTo(recipientEmail).
 		// AddCc("otherto@example.com").
 		SetSubject("Verification status")

@@ -87,16 +87,16 @@ func (bc *BigCache) ReadString(key string) (string, error) {
 	bs, err := bc.stringData.Get(key)
 	if err != nil {
 		if errors.Is(err, bigcache.ErrEntryNotFound) {
-			log.ServerError.Println("Cache entry not found")
+			log.ServerInfo.Println("Cache entry not found")
 		}
 
-		log.ServerError.Printf("Failed to read string cache: %s", err.Error())
+		// log.ServerError.Printf("Failed to read string cache: %s", err.Error())
 	}
 
 	var entryData string
 	err = json.Unmarshal(bs, &entryData)
 	if err != nil {
-		log.ServerError.Printf("Failed to unmarshal string cache: %s", err.Error())
+		// log.ServerError.Printf("Failed to unmarshal string cache: %s", err.Error())
 	}
 
 	return entryData, nil
@@ -106,16 +106,16 @@ func (bc *BigCache) ReadStruct(key string) (models.CornerstoneCredentialProofReq
 	bs, err := bc.structData.Get(key)
 	if err != nil {
 		if errors.Is(err, bigcache.ErrEntryNotFound) {
-			log.ServerError.Println("Cache entry not found")
+			log.ServerInfo.Println("Cache entry not found")
 		}
 
-		log.ServerError.Printf("Failed to read struct cache: %s", err.Error())
+		// log.ServerError.Printf("Failed to read struct cache: %s", err.Error())
 	}
 
 	var entryData models.CornerstoneCredentialProofRequest
 	err = json.Unmarshal(bs, &entryData)
 	if err != nil {
-		log.ServerError.Printf("Failed to unmarshal struct cache: %s", err.Error())
+		// log.ServerError.Printf("Failed to unmarshal struct cache: %s", err.Error())
 	}
 
 	return entryData, nil

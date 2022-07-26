@@ -119,17 +119,17 @@ func listVerificationRecordsHandler(config *config.Config, client *client.Client
 
 		records, err := client.ListVerificationRecords()
 		if err != nil {
-			log.Error.Printf("Failed to list credential records: %s", err)
+			log.Error.Printf("Failed to list verification records: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			res := server.Response{
 				"success": false,
-				"msg":     "Failed to list credential records: " + err.Error(),
+				"msg":     "Failed to list verification records: " + err.Error(),
 			}
 			json.NewEncoder(w).Encode(res)
 			return
 		}
 
-		log.Info.Print("Credential records listed successfully!")
+		log.Info.Print("Verification records listed successfully!")
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(records.Results)
@@ -186,7 +186,7 @@ func verifyCredentialHandler(config *config.Config, client *client.Client, cache
 		}
 
 		// Step 2: Cache IAMZA indicator
-		err = cache.UpdateString(invitation.Invitation.RecipientKeys[0], "IAMZA proof")
+		err = cache.UpdateString(invitation.Invitation.RecipientKeys[0]+"IAMZA", "IAMZA proof")
 		if err != nil {
 			log.Error.Printf("Failed to cache proof data: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -245,11 +245,11 @@ func verifyCredentialByEmailHandler(config *config.Config, client *client.Client
 		var proofInfo models.CredentialProofRequest
 		err := json.NewDecoder(r.Body).Decode(&proofInfo)
 		if err != nil {
-			log.Error.Printf("Failed to decode credential data: %s", err)
+			log.Error.Printf("Failed to decode proof request data: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			res := server.Response{
 				"success": false,
-				"msg":     "Failed to decode credential data: " + err.Error(),
+				"msg":     "Failed to decode proof request data: " + err.Error(),
 			}
 			json.NewEncoder(w).Encode(res)
 			return
@@ -296,6 +296,19 @@ func verifyCredentialByEmailHandler(config *config.Config, client *client.Client
 			return
 		}
 
+		// For email proof notification
+		err = cache.UpdateString(invitation.Invitation.RecipientKeys[0]+"email", proofInfo.Email)
+		if err != nil {
+			log.Error.Printf("Failed to cache proof email: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Response{
+				"success": false,
+				"msg":     "Failed to cache proof email: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
 		// Step 5: Generate a qr code for email
 		qrCodePng, err := qrcode.Encode(invitation.InvitationURL, qrcode.Medium, 256)
 		if err != nil {
@@ -312,11 +325,11 @@ func verifyCredentialByEmailHandler(config *config.Config, client *client.Client
 		// Step 6: Send email
 		err = utils.SendProofRequestByEmail(proofInfo.Email, invitation.Invitation.RecipientKeys[0], qrCodePng)
 		if err != nil {
-			log.Warning.Print("Failed to send credential by email: ", err)
+			log.Warning.Print("Failed to send proof request by email: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			res := server.Response{
 				"success": false,
-				"msg":     "Failed to send credential by email",
+				"msg":     "Failed to send proof request by email",
 			}
 			json.NewEncoder(w).Encode(res)
 			return
@@ -370,11 +383,11 @@ func verifyCornerstoneCredentialHandler(config *config.Config, client *client.Cl
 		var proofInfo models.CornerstoneCredentialProofRequest
 		err := json.NewDecoder(r.Body).Decode(&proofInfo)
 		if err != nil {
-			log.Error.Printf("Failed to decode credential data: %s", err)
+			log.Error.Printf("Failed to decode proof request data: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			res := server.Response{
 				"success": false,
-				"msg":     "Failed to decode credential data: " + err.Error(),
+				"msg":     "Failed to decode proof request data: " + err.Error(),
 			}
 			json.NewEncoder(w).Encode(res)
 			return
@@ -455,11 +468,11 @@ func verifyCornerstoneCredentialByEmailHandler(config *config.Config, client *cl
 		var proofInfo models.CornerstoneCredentialProofRequest
 		err := json.NewDecoder(r.Body).Decode(&proofInfo)
 		if err != nil {
-			log.Error.Printf("Failed to decode credential data: %s", err)
+			log.Error.Printf("Failed to decode proof request data: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			res := server.Response{
 				"success": false,
-				"msg":     "Failed to decode credential data: " + err.Error(),
+				"msg":     "Failed to decode proof request data: " + err.Error(),
 			}
 			json.NewEncoder(w).Encode(res)
 			return
@@ -522,11 +535,11 @@ func verifyCornerstoneCredentialByEmailHandler(config *config.Config, client *cl
 		// Step 7: Send email
 		err = utils.SendProofRequestByEmail(proofInfo.Email, invitation.Invitation.RecipientKeys[0], qrCodePng)
 		if err != nil {
-			log.Warning.Print("Failed to send credential by email: ", err)
+			log.Warning.Print("Failed to send proof request by email: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			res := server.Response{
 				"success": false,
-				"msg":     "Failed to send credential by email",
+				"msg":     "Failed to send proof request by email",
 			}
 			json.NewEncoder(w).Encode(res)
 			return
@@ -599,9 +612,8 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 				}
 			}
 
-			iamzaProofRequest, _ := cache.ReadString(request.InvitationKey)
+			iamzaProofRequest, _ := cache.ReadString(request.InvitationKey + "IAMZA")
 			if iamzaProofRequest == "IAMZA proof" && request.State == "active" {
-
 				cornerstoneCredDefID := config.GetCornerstoneCredDefID()
 				addressCredDefID := config.GetAddressCredDefID()
 				vaccineCredDefID := config.GetVaccineCredDefID()
@@ -745,7 +757,17 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					return
 				}
 
-				cache.DeleteString(request.InvitationKey)
+				// For email proof notification
+				proofEmail, _ := cache.ReadString(request.InvitationKey + "email")
+				err = cache.UpdateString(request.ConnectionID, proofEmail)
+				if err != nil {
+					log.Error.Printf("Failed to cache proof data: %s", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+
+				cache.DeleteString(request.InvitationKey + "IAMZA")
+				cache.DeleteString(request.InvitationKey + "email")
 
 				log.Info.Println("Proof request sent")
 				w.WriteHeader(http.StatusOK)
@@ -869,6 +891,14 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					return
 				}
 
+				// For email proof notification
+				err = cache.UpdateString(request.ConnectionID, proofData.Email)
+				if err != nil {
+					log.Error.Printf("Failed to cache cornerstone proof data: %s", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+
 				cache.DeleteStruct(request.InvitationKey)
 
 				log.Info.Println("Proof request sent")
@@ -876,6 +906,49 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 			}
 
 		case "present_proof":
+			var request models.PresentProofWebhookResponse
+			err := json.NewDecoder(r.Body).Decode(&request)
+			if err != nil {
+				log.Error.Printf("Failed to decode request body: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			proofEmail, err := cache.ReadString(request.ConnectionID)
+			if err != nil {
+				log.Error.Printf("Failed to read cached user data: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			if request.State == "verified" && proofEmail != "" {
+				presExRecord, err := client.GetPresExRecord(request.PresentationExchangeID)
+				if err != nil {
+					log.Error.Printf("Failed to get presentation record: %s", err)
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+
+				status := ""
+				if presExRecord.Verified == "true" {
+					status = "successfully"
+				} else if presExRecord.Verified == "false" {
+					status = "unsuccessfully. Please restart the process and provide valid attributes."
+				}
+
+				err = utils.SendNotificationEmail(proofEmail, status)
+				if err != nil {
+					log.Error.Printf("Failed to send credential notification email: %s", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+
+				cache.DeleteString(request.ConnectionID)
+
+				log.Info.Println("Notified user successfully about credential verification!")
+				w.WriteHeader(http.StatusOK)
+			}
+
 		case "issue_credential":
 		case "basicmessages":
 		case "revocation_registry":

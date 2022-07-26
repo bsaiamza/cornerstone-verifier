@@ -52,7 +52,7 @@ func (c *Client) CreateInvitation(request models.CreateInvitationRequest) (model
 
 func (c *Client) CreateMultiUseInvitation(request models.CreateInvitationRequest) (models.CreateInvitationResponse, error) {
 	queryParams := map[string]string{
-		"alias": "IAMZA Verifier",
+		"alias":     "IAMZA Verifier",
 		"multi_use": "true",
 	}
 	var invitation models.CreateInvitationResponse
