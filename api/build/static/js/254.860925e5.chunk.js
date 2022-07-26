@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkiamza_verifier=self.webpackChunkiamza_verifier||[]).push([[254],{254:function(i,e,n){n.r(e);n(2791);var r=n(184);e.default=function(){return(0,r.jsx)("div",{children:"Can't find what you looking for! \ud83e\udd37\u200d\u2642\ufe0f"})}}}]);
+//# sourceMappingURL=254.860925e5.chunk.js.map

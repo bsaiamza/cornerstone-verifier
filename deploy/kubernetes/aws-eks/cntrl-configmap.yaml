@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cornerstone-verifier-configmap
+  namespace: cornerstone-verifier
+data:
+  # acapy variables
+  ACAPY_URL: "http://cornerstone-verifier-agent.cornerstone-verifier.svc.cluster.local:8001" # socket - ?
+  # ACAPY_ADMIN_API_KEY: secret
+  # client variables
+  # CLIENT_URL: "http://cornerstone-verifier-agent.cornerstone-verifier.svc.cluster.local:3000"      # socket
+  # server variables
+  SERVER_ADDRESS: 0.0.0.0:8280
+  CORNERSTONE_CRED_DEF_ID: "BER7WwiAMK9igkiRjPYpEp:3:CL:51804:IAMZA Cornerstone Credential"
+  ADDRESS_CRED_DEF_ID: "Y8X9iqAn2kYN5cce3Jgcjp:3:CL:51757:IAMZA Physical Address Credential"
+  VACCINE_CRED_DEF_ID: "CiW8u785VTBW1S9AsPXGXi:3:CL:51753:IAMZA Vaccine Credential"

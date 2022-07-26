@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cornerstone-verifier-agent
+  namespace: cornerstone-verifier
+  labels:
+    app: cornerstone-verifier-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cornerstone-verifier-agent
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: cornerstone-verifier-agent
+    spec:
+      containers:
+        - name: cornerstone-verifier-agent
+          image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
+          imagePullPolicy: Always
+          ports:
+            - name: agnt-admin-port
+              containerPort: 8001
+              protocol: TCP
+            - name: agnt-http-port
+              containerPort: 8000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: cornerstone-verifier-agent-configmap
+          command: [
+              "/bin/bash",
+              "-c",
+              "aca-py start \
+              --admin '0.0.0.0' 8001 \
+              --inbound-transport http '0.0.0.0' 8000 \
+              --outbound-transport http \
+              --connections-invite",
+            ]
