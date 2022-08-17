@@ -52,7 +52,7 @@ const VerifyCredentialEmailForm = () => {
         <FormikComponent
           initialValues={{
             id_number: false,
-            forenames: false,
+            first_names: false,
             surname: false,
             gender: false,
             date_of_birth: false,
@@ -87,15 +87,15 @@ const VerifyCredentialEmailForm = () => {
               </div>
               <div>
                 <FormControl sx={{ width: '16.5rem' }}>
-                  <InputLabel id="forenames" sx={{ margin: '1rem 0 0 1rem' }}>
-                    Forenames
+                  <InputLabel id="first_names" sx={{ margin: '1rem 0 0 1rem' }}>
+                    First Names
                   </InputLabel>
                   <Select
-                    labelId="forenames"
-                    id="forenames"
-                    name="forenames"
-                    value={values.forenames}
-                    label="Forenames"
+                    labelId="first_names"
+                    id="first_names"
+                    name="first_names"
+                    value={values.first_names}
+                    label="First Names"
                     onChange={handleChange}
                     sx={{ m: '1rem' }}
                   >

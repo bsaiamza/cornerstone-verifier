@@ -20,6 +20,7 @@ venv/
 # Cornerstone Issuer
 # Files
 *.log
+web/package-lock.json
 
 # Folders
 .vscode/

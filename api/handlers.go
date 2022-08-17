@@ -284,7 +284,7 @@ func verifyCredentialByEmailHandler(config *config.Config, client *client.Client
 		}
 
 		// Step 4: Cache IAMZA indicator
-		err = cache.UpdateString(invitation.Invitation.RecipientKeys[0], "IAMZA proof")
+		err = cache.UpdateString(invitation.Invitation.RecipientKeys[0]+"IAMZA", "IAMZA proof")
 		if err != nil {
 			log.Error.Printf("Failed to cache proof data: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -566,7 +566,7 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 	return func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
 		header.Add("Access-Control-Allow-Origin", "*")
-		header.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		header.Add("Access-Control-Allow-Methods", "POST, OPTIONS")
 		header.Add("Access-Control-Allow-Headers", "Content-Type")
 
 		if r.Method == "OPTIONS" {
@@ -634,16 +634,32 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 				}
 
 				namesProof := map[string]interface{}{
-					"name": "Forenames",
+					"name": "First Names",
 					"restrictions": []map[string]interface{}{
-						{},
+						{
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
+						},
 					},
 				}
 
 				surnameProof := map[string]interface{}{
 					"name": "Surname",
 					"restrictions": []map[string]interface{}{
-						{},
+						{
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
+						},
 					},
 				}
 
@@ -651,7 +667,13 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					"name": "Gender",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": cornerstoneCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
@@ -659,24 +681,44 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 				dobProof := map[string]interface{}{
 					"name": "Date of Birth",
 					"restrictions": []map[string]interface{}{
-						{},
+						{
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
+						},
 					},
 				}
 
 				street1Proof := map[string]interface{}{
-					"name": "Street 1",
+					"name": "Address Line 1",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": addressCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
 
 				street2Proof := map[string]interface{}{
-					"name": "Street 2",
+					"name": "Address Line 2",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": addressCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
@@ -685,7 +727,13 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					"name": "City",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": addressCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
@@ -694,7 +742,13 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					"name": "Postal Code",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": addressCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
@@ -703,7 +757,13 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					"name": "Vaccine Type",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": vaccineCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
@@ -712,7 +772,13 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					"name": "Vaccine Dose",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": vaccineCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
@@ -721,7 +787,13 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					"name": "Date of Vaccination",
 					"restrictions": []map[string]interface{}{
 						{
-							// "cred_def_id": vaccineCredDefID,
+							"cred_def_id": cornerstoneCredDefID,
+						},
+						{
+							"cred_def_id": addressCredDefID,
+						},
+						{
+							"cred_def_id": vaccineCredDefID,
 						},
 					},
 				}
@@ -801,9 +873,9 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					idProof = nil
 				}
 
-				if proofData.Forenames {
+				if proofData.FirstNames {
 					namesProof = map[string]interface{}{
-						"name": "Forenames",
+						"name": "First Names",
 						"restrictions": []map[string]interface{}{
 							{
 								"cred_def_id": credDefID,

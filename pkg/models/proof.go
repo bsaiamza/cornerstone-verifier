@@ -15,7 +15,7 @@ type IAMZAPresentationRequest struct {
 
 type IAMZARequestedAttributes struct {
 	The0_IDNumberUUID          interface{} `json:"0_IDNumber_uuid,omitempty"`
-	The0_ForenamesUUID         interface{} `json:"0_Forenames_uuid,omitempty"`
+	The0_FirstNamesUUID         interface{} `json:"0_FirstNames_uuid,omitempty"`
 	The0_SurnameUUID           interface{} `json:"0_Surname_uuid,omitempty"`
 	The0_GenderUUID            interface{} `json:"0_Gender_uuid,omitempty"`
 	The0_DateOfBirthUUID       interface{} `json:"0_DateOfBirth_uuid,omitempty"`
@@ -43,7 +43,7 @@ type PresentationRequest struct {
 
 type RequestedAttributes struct {
 	The0_IDNumberUUID       interface{} `json:"0_IDNumber_uuid,omitempty"`
-	The0_ForenamesUUID      interface{} `json:"0_Forenames_uuid,omitempty"`
+	The0_FirstNamesUUID      interface{} `json:"0_FirstNames_uuid,omitempty"`
 	The0_SurnameUUID        interface{} `json:"0_Surname_uuid,omitempty"`
 	The0_GenderUUID         interface{} `json:"0_Gender_uuid,omitempty"`
 	The0_DateOfBirthUUID    interface{} `json:"0_DateOfBirth_uuid,omitempty"`
