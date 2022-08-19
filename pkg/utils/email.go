@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"iamza_verifier/pkg/config"
 	"iamza_verifier/pkg/log"
 
 	mailV2 "github.com/xhit/go-simple-mail/v2"
@@ -23,7 +24,7 @@ func ValidEmail(email string) error {
 	return nil
 }
 
-func SendProofRequestByEmail(recipientEmail, qrImgName string, qrCode []byte) error {
+func SendProofRequestByEmail(recipientEmail, qrImgName string, qrCode []byte, config *config.Config) error {
 	img, _, err := image.Decode(bytes.NewReader(qrCode))
 	if err != nil {
 		log.ServerError.Printf("Failed to decode qr code: %s", err.Error())
@@ -68,8 +69,8 @@ func SendProofRequestByEmail(recipientEmail, qrImgName string, qrCode []byte) er
 	//SMTP Server
 	server.Host = "smtp.office365.com"
 	server.Port = 587
-	server.Username = "aws_iamzanet@bankservafrica.com"
-	server.Password = "K5fEoXa8"
+	server.Username = config.GetEmailUsername()
+	server.Password = config.GetEmailPassword()
 	server.Encryption = mailV2.EncryptionSTARTTLS
 	server.Authentication = mailV2.AuthLogin
 
@@ -91,7 +92,7 @@ func SendProofRequestByEmail(recipientEmail, qrImgName string, qrCode []byte) er
 	//New email simple html with inline and CC
 	email := mailV2.NewMSG()
 
-	email.SetFrom("aws_iamzanet@bankservafrica.com").
+	email.SetFrom(config.GetEmailUsername()).
 		AddTo(recipientEmail).
 		// AddCc("otherto@example.com").
 		SetSubject("Verify your Credential")
@@ -116,7 +117,7 @@ func SendProofRequestByEmail(recipientEmail, qrImgName string, qrCode []byte) er
 	return nil
 }
 
-func SendNotificationEmail(recipientEmail, status string) error {
+func SendNotificationEmail(recipientEmail, status string, config *config.Config) error {
 	htmlBody := `
 		<html>
 			<head>
@@ -145,8 +146,8 @@ func SendNotificationEmail(recipientEmail, status string) error {
 	//SMTP Server
 	server.Host = "smtp.office365.com"
 	server.Port = 587
-	server.Username = "aws_iamzanet@bankservafrica.com"
-	server.Password = "K5fEoXa8"
+	server.Username = config.GetEmailUsername()
+	server.Password = config.GetEmailPassword()
 	server.Encryption = mailV2.EncryptionSTARTTLS
 	server.Authentication = mailV2.AuthLogin
 
@@ -168,7 +169,7 @@ func SendNotificationEmail(recipientEmail, status string) error {
 	//New email simple html with inline and CC
 	email := mailV2.NewMSG()
 
-	email.SetFrom("aws_iamzanet@bankservafrica.com").
+	email.SetFrom(config.GetEmailUsername()).
 		AddTo(recipientEmail).
 		// AddCc("otherto@example.com").
 		SetSubject("Verification status")

@@ -34,3 +34,12 @@ func (c *Config) GetVaccineCredDefID() string {
 func (c *Config) GetServerAddress() string {
 	return getEnvVarByName("SERVER_ADDRESS")
 }
+
+func (c *Config) GetEmailUsername() string {
+	return getEnvVarByName("EMAIL_USERNAME")
+}
+
+func (c *Config) GetEmailPassword() string {
+	return getEnvVarByName("EMAIL_PASSWORD")
+}
+

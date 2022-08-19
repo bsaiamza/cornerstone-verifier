@@ -323,7 +323,7 @@ func verifyCredentialByEmailHandler(config *config.Config, client *client.Client
 		}
 
 		// Step 6: Send email
-		err = utils.SendProofRequestByEmail(proofInfo.Email, invitation.Invitation.RecipientKeys[0], qrCodePng)
+		err = utils.SendProofRequestByEmail(proofInfo.Email, invitation.Invitation.RecipientKeys[0], qrCodePng, config)
 		if err != nil {
 			log.Warning.Print("Failed to send proof request by email: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -533,7 +533,7 @@ func verifyCornerstoneCredentialByEmailHandler(config *config.Config, client *cl
 		}
 
 		// Step 7: Send email
-		err = utils.SendProofRequestByEmail(proofInfo.Email, invitation.Invitation.RecipientKeys[0], qrCodePng)
+		err = utils.SendProofRequestByEmail(proofInfo.Email, invitation.Invitation.RecipientKeys[0], qrCodePng, config)
 		if err != nil {
 			log.Warning.Print("Failed to send proof request by email: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -1008,7 +1008,7 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					status = "unsuccessfully. Please restart the process and provide valid attributes."
 				}
 
-				err = utils.SendNotificationEmail(proofEmail, status)
+				err = utils.SendNotificationEmail(proofEmail, status, config)
 				if err != nil {
 					log.Error.Printf("Failed to send credential notification email: %s", err)
 					w.WriteHeader(http.StatusInternalServerError)
