@@ -43,3 +43,10 @@ func (c *Config) GetEmailPassword() string {
 	return getEnvVarByName("EMAIL_PASSWORD")
 }
 
+func (c *Config) GetTxnCounterAPI() string {
+	return getEnvVarByName("TXN_COUNTER_API")
+}
+
+func (c *Config) GetTxnCounterSwitch() string {
+	return getEnvVarByName("TXN_COUNTER_SWITCH")
+}

@@ -17,4 +17,11 @@ data:
   # server variables
   SERVER_ADDRESS: 0.0.0.0:8280
   EMAIL_USERNAME: aws_iamzanet@bankservafrica.com
+<<<<<<< HEAD
 #  EMAIL_PASSWORD: K5fEoXa88
+=======
+  EMAIL_PASSWORD: K5fEoXa88
+  # txn counter variables
+  TXN_COUNTER_API: "https://verifier-cntr.iamza-sandbox.com/verifier/submit?payload="
+  TXN_COUNTER_SWITCH: "1"
+>>>>>>> b6b35fdf4b86a46bef5342fe308ae2256ff41211

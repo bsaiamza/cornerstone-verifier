@@ -2,6 +2,8 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -1019,6 +1021,45 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 
 				log.Info.Println("Notified user successfully about credential verification!")
 				w.WriteHeader(http.StatusOK)
+			}
+
+			if request.State == "verified" {
+				txnCounterSwitch := config.GetTxnCounterSwitch()
+
+				if txnCounterSwitch == "0" {
+
+				} else if txnCounterSwitch == "1" {
+					log.Info.Println("Calling Transaction Counter")
+
+					txnID := utils.RandomTxnID(12)
+
+					p1 := "%7B%22WriterDID%22%3A%20%22BER7WwiAMK9igkiRjPYpEp%22%2C%22WriterDomain%22%3A%20%22IAMZA%20Verifier%22%2C%22WriterMetaData%22%3A%20%7B%22txnid%22%3A%20%22"
+					p2 := "%22%7D%7D"
+
+					payload := p1 + txnID + p2
+
+					url := config.GetTxnCounterAPI() + payload
+
+					req, err := http.NewRequest("POST", url, nil)
+					if err != nil {
+						log.Error.Printf("Failed to create new Transaction Counter API request: %s", err)
+						return
+					}
+
+					req.Header.Add("Content-Type", "application/json")
+
+					res, err := http.DefaultClient.Do(req)
+					if err != nil {
+						log.Error.Printf("Failed on Transaction Counter API call: %s", err)
+						return
+					}
+
+					defer res.Body.Close()
+					body, _ := ioutil.ReadAll(res.Body)
+
+					fmt.Println("\n")
+					fmt.Println("Transaction Counter API response: ", string(body))
+				}
 			}
 
 		case "issue_credential":

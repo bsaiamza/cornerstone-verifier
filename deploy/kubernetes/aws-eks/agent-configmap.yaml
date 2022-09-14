@@ -30,3 +30,4 @@ data:
   ACAPY_AUTO_VERIFY_PRESENTATION: "true"
   ACAPY_IMAGE_URL: "https://verifier.iamza-sandbox.com/iamza_logo.png"
   ACAPY_WEBHOOK_URL: "https://verifier.iamza-sandbox.com/api/v1/iamza-verifier"
+  ACAPY_EMIT_NEW_DIDCOMM_PREFIX: "true"
