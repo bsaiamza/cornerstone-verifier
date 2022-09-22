@@ -11,13 +11,10 @@ data:
   # ADDRESS_CRED_DEF_ID: "Y8X9iqAn2kYN5cce3Jgcjp:3:CL:52293:IAMZA Physical Address Credential"
   ADDRESS_CRED_DEF_ID: "Y8X9iqAn2kYN5cce3Jgcjp:3:CL:52641:IAMZA Physical Address Credential"
   VACCINE_CRED_DEF_ID: "CiW8u785VTBW1S9AsPXGXi:3:CL:52287:IAMZA Vaccine Credential"
-  # ACAPY_ADMIN_API_KEY: secret
   # client variables
   # CLIENT_URL: "http://cornerstone-verifier-agent.cornerstone-verifier.svc.cluster.local:3000"      # socket
   # server variables
   SERVER_ADDRESS: 0.0.0.0:8280
-  EMAIL_USERNAME: aws_iamzanet@bankservafrica.com
-#  EMAIL_PASSWORD: 
   # txn counter variables
   TXN_COUNTER_API: "https://verifier-cntr.iamza-sandbox.com/verifier/submit?payload="
   TXN_COUNTER_SWITCH: "1"

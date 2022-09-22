@@ -38,3 +38,18 @@ spec:
                 secretKeyRef:
                   name: cornerstoneverifiersecret
                   key: emailpw
+            - name: EMAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: cornerstoneverifiersecret
+                  key: emailusername
+            - name: EMAIL_SMTP_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: cornerstoneverifiersecret
+                  key: emailsmtpserver
+            - name: EMAIL_SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: cornerstoneverifiersecret
+                  key: emailsmtpport
