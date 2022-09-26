@@ -56,6 +56,23 @@ func (c *Client) SendProofRequest(request models.ProofRequest) (models.SendProof
 	return proof, nil
 }
 
+func (c *Client) SendContactableProofRequest(request models.ContactableProofRequest) (models.SendProofRequestResponse, error) {
+	var proof models.SendProofRequestResponse
+
+	arg := models.AcapyPostRequest{
+		Endpoint: "/present-proof/send-request",
+		Body:     request,
+		Response: &proof,
+	}
+
+	err := c.post(arg)
+	if err != nil {
+		log.Error.Printf("Failed on ACA-py /present-proof/send-request: %s", err.Error())
+		return models.SendProofRequestResponse{}, err
+	}
+	return proof, nil
+}
+
 func (c *Client) GetPresExRecord(presExID string) (models.Records, error) {
 	endpoint := fmt.Sprintf("/present-proof/records/%s", presExID)
 	var presExRecord models.Records

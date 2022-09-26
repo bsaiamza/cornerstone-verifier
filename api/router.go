@@ -27,6 +27,7 @@ func NewRouter(config *config.Config, client *client.Client, cache *utils.BigCac
 	path.HandleFunc("/verify-email", verifyCredentialByEmail(config, client, cache))
 	path.HandleFunc("/verify-cornerstone", verifyCornerstoneCredential(config, client, cache))
 	path.HandleFunc("/verify-cornerstone-email", verifyCornerstoneCredentialByEmail(config, client, cache))
+	path.HandleFunc("/verify-contactable", verifyContactableCredential(config, client, cache))
 	path.HandleFunc("/topic/{topic}/", webhookEvents(config, client, cache))
 
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem()))

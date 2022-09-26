@@ -52,6 +52,19 @@ const HomePage = () => {
               </Link>
             </ButtonComponent>
           </div>
+          <div>
+            <ButtonComponent variant="contained" sx={{ m: '2rem' }}>
+              <Link
+                to="verify-contactable-credential"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none',
+                }}
+              >
+                Verify a Contactable Credential
+              </Link>
+            </ButtonComponent>
+          </div>
         </GridComponent>
         <GridComponent
           item

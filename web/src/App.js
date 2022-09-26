@@ -19,6 +19,9 @@ const VerifyCornerstoneCredentialPage = lazy(() =>
   import('./pages/VerifyCornerstone')
 )
 const VerifyCredentialPage = lazy(() => import('./pages/Verify'))
+const VerifyContactableCredentialPage = lazy(() =>
+  import('./pages/VerifyContactable')
+)
 const HomePage = lazy(() => import('./pages/Home'))
 const NotFoundPage = lazy(() => import('./pages/NotFound'))
 
@@ -36,6 +39,10 @@ function App() {
             element={<VerifyCornerstoneCredentialPage />}
           />
           <Route path="verify-credential" element={<VerifyCredentialPage />} />
+          <Route
+            path="verify-contactable-credential"
+            element={<VerifyContactableCredentialPage />}
+          />
           <Route path="records" element={<VerificationRecordsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

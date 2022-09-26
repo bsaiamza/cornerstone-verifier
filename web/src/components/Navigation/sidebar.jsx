@@ -129,6 +129,28 @@ const Sidebar = ({ handleCloseDrawer, openDrawer }) => {
         </NavLink>
 
         <NavLink
+          to="/verify-contactable-credential"
+          className={({ isActive }) =>
+            openDrawer
+              ? isActive
+                ? 'link-active'
+                : 'link'
+              : isActive
+              ? 'link-active'
+              : 'link'
+          }
+        >
+          <ListItemComponent disablePadding>
+            <ListItemButtonComponent onClick={handleCloseDrawer}>
+              <ListItemIconComponent>
+                <Badge />
+              </ListItemIconComponent>
+              <ListItemTextComponent primary="Verify Contactable Credential" />
+            </ListItemButtonComponent>
+          </ListItemComponent>
+        </NavLink>
+
+        <NavLink
           to="/records"
           className={({ isActive }) =>
             openDrawer

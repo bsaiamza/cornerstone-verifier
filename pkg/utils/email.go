@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"net/mail"
 	"os"
+	"strconv"
 	"time"
 
 	"iamza_verifier/pkg/config"
@@ -67,8 +68,12 @@ func SendProofRequestByEmail(recipientEmail, qrImgName string, qrCode []byte, co
 	server := mailV2.NewSMTPClient()
 
 	//SMTP Server
-	server.Host = "smtp.office365.com"
-	server.Port = 587
+	server.Host = config.GetSmtpServer()
+	smtpPort, err := strconv.Atoi(config.GetSmtpPort())
+	if err != nil {
+		log.ServerError.Printf("Failed to convert SMTP port: %s", err.Error())
+	}
+	server.Port = smtpPort
 	server.Username = config.GetEmailUsername()
 	server.Password = config.GetEmailPassword()
 	server.Encryption = mailV2.EncryptionSTARTTLS
@@ -144,8 +149,12 @@ func SendNotificationEmail(recipientEmail, status string, config *config.Config)
 	server := mailV2.NewSMTPClient()
 
 	//SMTP Server
-	server.Host = "smtp.office365.com"
-	server.Port = 587
+	server.Host = config.GetSmtpServer()
+	smtpPort, err := strconv.Atoi(config.GetSmtpPort())
+	if err != nil {
+		log.ServerError.Printf("Failed to convert SMTP port: %s", err.Error())
+	}
+	server.Port = smtpPort
 	server.Username = config.GetEmailUsername()
 	server.Password = config.GetEmailPassword()
 	server.Encryption = mailV2.EncryptionSTARTTLS

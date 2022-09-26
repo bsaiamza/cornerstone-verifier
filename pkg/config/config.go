@@ -31,6 +31,10 @@ func (c *Config) GetVaccineCredDefID() string {
 	return getEnvVarByName("VACCINE_CRED_DEF_ID")
 }
 
+func (c *Config) GetContactableCredDefID() string {
+	return getEnvVarByName("CONTACTABLE_CRED_DEF_ID")
+}
+
 func (c *Config) GetServerAddress() string {
 	return getEnvVarByName("SERVER_ADDRESS")
 }
@@ -41,6 +45,14 @@ func (c *Config) GetEmailUsername() string {
 
 func (c *Config) GetEmailPassword() string {
 	return getEnvVarByName("EMAIL_PASSWORD")
+}
+
+func (c *Config) GetSmtpServer() string {
+	return getEnvVarByName("EMAIL_SMTP_SERVER")
+}
+
+func (c *Config) GetSmtpPort() string {
+	return getEnvVarByName("EMAIL_SMTP_PORT")
 }
 
 func (c *Config) GetTxnCounterAPI() string {

@@ -28,6 +28,33 @@ type IAMZARequestedAttributes struct {
 	The0_DateOfVaccinationUUID interface{} `json:"0_DateOfVaccination_uuid,omitempty"`
 }
 
+type ContactableProofRequest struct {
+	Comment             string                         `json:"comment"`
+	ConnectionID        string                         `json:"connection_id"`
+	PresentationRequest ContactablePresentationRequest `json:"proof_request"`
+}
+
+type ContactablePresentationRequest struct {
+	Name                string                         `json:"name"`
+	Version             string                         `json:"version"`
+	RequestedAttributes ContactableRequestedAttributes `json:"requested_attributes,omitempty"`
+	RequestedPredicates RequestedPredicates            `json:"requested_predicates"`
+}
+
+type ContactableRequestedAttributes struct {
+	The0_nameUUID             interface{} `json:"0_name_uuid,omitempty"`
+	The0_surnameUUID          interface{} `json:"0_surname_uuid,omitempty"`
+	The0_idnumberUUID         interface{} `json:"0_idnumber_uuid,omitempty"`
+	The0_profilePictureUUID   interface{} `json:"0_profilePicture_uuid,omitempty"`
+	The0_addressLine1UUID     interface{} `json:"0_addressLine1_uuid,omitempty"`
+	The0_suburbUUID           interface{} `json:"0_suburb_uuid,omitempty"`
+	The0_cityUUID             interface{} `json:"0_city_uuid,omitempty"`
+	The0_provinceUUID         interface{} `json:"0_province_uuid,omitempty"`
+	The0_countryUUID          interface{} `json:"0_country_uuid,omitempty"`
+	The0_postalCodeUUID       interface{} `json:"0_postalCode_uuid,omitempty"`
+	The0_identityDocumentUUID interface{} `json:"0_identityDocument_uuid,omitempty"`
+}
+
 type ProofRequest struct {
 	Comment             string              `json:"comment"`
 	ConnectionID        string              `json:"connection_id"`

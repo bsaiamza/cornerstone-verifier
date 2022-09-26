@@ -557,6 +557,77 @@ func verifyCornerstoneCredentialByEmailHandler(config *config.Config, client *cl
 	}
 }
 
+func verifyContactableCredential(config *config.Config, client *client.Client, cache *utils.BigCache) http.HandlerFunc {
+	mdw := []server.Middleware{
+		server.LogAPIRequest,
+	}
+
+	return server.ChainMiddleware(verifyContactableCredentialHandler(config, client, cache), mdw...)
+}
+func verifyContactableCredentialHandler(config *config.Config, client *client.Client, cache *utils.BigCache) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		header := w.Header()
+		header.Add("Access-Control-Allow-Origin", "*")
+		header.Add("Access-Control-Allow-Methods", "GET, OPTIONS")
+		header.Add("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != http.MethodGet {
+			log.Warning.Print("Incorrect request method!")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			res := server.Response{
+				"success": false,
+				"msg":     "Warning: Incorrect request method!",
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		defer r.Body.Close()
+
+		log.Info.Println("Creating proof request...")
+
+		// Step 1: Create Invitation
+		invitationRequest := models.CreateInvitationRequest{}
+
+		invitation, err := client.CreateInvitation(invitationRequest)
+		if err != nil {
+			log.Error.Printf("Failed to create invitation: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Response{
+				"success": false,
+				"msg":     "Failed to create invitation: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		// Step 2: Cache IAMZA indicator
+		err = cache.UpdateString(invitation.Invitation.RecipientKeys[0]+"Contactable", "Contactable proof")
+		if err != nil {
+			log.Error.Printf("Failed to cache proof data: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Response{
+				"success": false,
+				"msg":     "Failed to cache proof data: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		res := server.Response{
+			"success":      true,
+			"proofRequest": invitation.InvitationURL,
+		}
+		json.NewEncoder(w).Encode(res)
+	}
+}
+
 func webhookEvents(config *config.Config, client *client.Client, cache *utils.BigCache) http.HandlerFunc {
 	mdw := []server.Middleware{
 		server.LogAPIRequest,
@@ -615,6 +686,8 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 			}
 
 			iamzaProofRequest, _ := cache.ReadString(request.InvitationKey + "IAMZA")
+			contactableProofRequest, _ := cache.ReadString(request.InvitationKey + "Contactable")
+
 			if iamzaProofRequest == "IAMZA proof" && request.State == "active" {
 				cornerstoneCredDefID := config.GetCornerstoneCredDefID()
 				addressCredDefID := config.GetAddressCredDefID()
@@ -845,6 +918,143 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 
 				log.Info.Println("Proof request sent")
 				w.WriteHeader(http.StatusOK)
+			} else if contactableProofRequest == "Contactable proof" && request.State == "active" {
+				contactableCredDefID := config.GetContactableCredDefID()
+
+				nameProof := map[string]interface{}{
+					"name": "name",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				surnameProof := map[string]interface{}{
+					"name": "surname",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				idnumberProof := map[string]interface{}{
+					"name": "idnumber",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				profilePictureProof := map[string]interface{}{
+					"name": "profilePicture",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				addressLine1Proof := map[string]interface{}{
+					"name": "addressLine1",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				suburbProof := map[string]interface{}{
+					"name": "suburb",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				cityProof := map[string]interface{}{
+					"name": "city",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				provinceProof := map[string]interface{}{
+					"name": "province",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				countryProof := map[string]interface{}{
+					"name": "country",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				postalCodeProof := map[string]interface{}{
+					"name": "postalCode",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				identityDocumentProof := map[string]interface{}{
+					"name": "identityDocument",
+					"restrictions": []map[string]interface{}{
+						{
+							"cred_def_id": contactableCredDefID,
+						},
+					},
+				}
+
+				proofRequest := models.ContactableProofRequest{
+					Comment:      "Contactable Proof Request",
+					ConnectionID: request.ConnectionID,
+					PresentationRequest: models.ContactablePresentationRequest{
+						Name:    "Contactable Proof of Identity",
+						Version: "1.0",
+						RequestedAttributes: models.ContactableRequestedAttributes{
+							nameProof,
+							surnameProof,
+							idnumberProof,
+							profilePictureProof,
+							addressLine1Proof,
+							suburbProof,
+							cityProof,
+							provinceProof,
+							countryProof,
+							postalCodeProof,
+							identityDocumentProof,
+						},
+						RequestedPredicates: models.RequestedPredicates{},
+					},
+				}
+
+				_, err = client.SendContactableProofRequest(proofRequest)
+				if err != nil {
+					log.Error.Printf("Failed to send proof request: %s", err)
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+
+				cache.DeleteString(request.InvitationKey + "Contactable")
+
+				log.Info.Println("Proof request sent")
+				w.WriteHeader(http.StatusOK)
+
 			} else if request.State == "active" {
 				proofData, err := cache.ReadStruct(request.InvitationKey)
 				if err != nil {
