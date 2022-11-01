@@ -1,12 +1,12 @@
 package main
 
 import (
-	"iamza_verifier/api"
-	"iamza_verifier/pkg/client"
-	"iamza_verifier/pkg/config"
-	"iamza_verifier/pkg/log"
-	"iamza_verifier/pkg/server"
-	"iamza_verifier/pkg/utils"
+	"iamza-verifier/api"
+	"iamza-verifier/pkg/acapy"
+	"iamza-verifier/pkg/config"
+	"iamza-verifier/pkg/log"
+	"iamza-verifier/pkg/server"
+	"iamza-verifier/pkg/utils"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 
 func runServer() {
 	config := config.LoadConfig()
-	acapyClient := client.NewClient(config.GetAcapyURL())
+	acapyClient := acapy.NewClient(config.GetAcapyURL())
 	cache := utils.NewBigCache()
 
 	srv := server.NewServer().

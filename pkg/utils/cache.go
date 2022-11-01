@@ -5,15 +5,13 @@ import (
 	"errors"
 	"time"
 
-	"iamza_verifier/pkg/log"
-	"iamza_verifier/pkg/models"
+	"iamza-verifier/pkg/log"
 
 	"github.com/allegro/bigcache/v3"
 )
 
 type BigCache struct {
 	stringData *bigcache.BigCache
-	structData *bigcache.BigCache
 }
 
 func NewBigCache() *BigCache {
@@ -61,26 +59,16 @@ func NewBigCache() *BigCache {
 
 	return &BigCache{
 		stringData: bCache,
-		structData: bCache,
 	}
 }
 
-func (bc *BigCache) UpdateString(key, entry string) error {
+func (bc *BigCache) String(key, entry string) error {
 	bs, err := json.Marshal(entry)
 	if err != nil {
 		log.ServerError.Printf("Failed to marshal string cache: %s", err.Error())
 	}
 
 	return bc.stringData.Set(key, bs)
-}
-
-func (bc *BigCache) UpdateStruct(key string, entry models.CornerstoneCredentialProofRequest) error {
-	bs, err := json.Marshal(&entry)
-	if err != nil {
-		log.ServerError.Printf("Failed to marshal struct cache: %s", err.Error())
-	}
-
-	return bc.structData.Set(key, bs)
 }
 
 func (bc *BigCache) ReadString(key string) (string, error) {
@@ -102,29 +90,6 @@ func (bc *BigCache) ReadString(key string) (string, error) {
 	return entryData, nil
 }
 
-func (bc *BigCache) ReadStruct(key string) (models.CornerstoneCredentialProofRequest, error) {
-	bs, err := bc.structData.Get(key)
-	if err != nil {
-		if errors.Is(err, bigcache.ErrEntryNotFound) {
-			log.ServerInfo.Println("Cache entry not found")
-		}
-
-		// log.ServerError.Printf("Failed to read struct cache: %s", err.Error())
-	}
-
-	var entryData models.CornerstoneCredentialProofRequest
-	err = json.Unmarshal(bs, &entryData)
-	if err != nil {
-		// log.ServerError.Printf("Failed to unmarshal struct cache: %s", err.Error())
-	}
-
-	return entryData, nil
-}
-
 func (bc *BigCache) DeleteString(key string) {
 	bc.stringData.Delete(key)
-}
-
-func (bc *BigCache) DeleteStruct(key string) {
-	bc.structData.Delete(key)
 }

@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"iamza_verifier/pkg/config"
-	"iamza_verifier/pkg/log"
+	"iamza-verifier/pkg/config"
+	"iamza-verifier/pkg/log"
 
 	mailV2 "github.com/xhit/go-simple-mail/v2"
 )

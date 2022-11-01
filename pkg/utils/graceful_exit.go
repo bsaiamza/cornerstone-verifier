@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"iamza_verifier/pkg/log"
+	"iamza-verifier/pkg/log"
 )
 
 func GracefulServerExit(callback func()) {

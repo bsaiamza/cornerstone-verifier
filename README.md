@@ -2,10 +2,10 @@
 
 Digital Identity is the identity use case of verifiable credentials as a implementation of the technology of HyperLedger Indy, HyperLedger URSA and Hyperledger Aries.
 
-- This use case involves verifying the below digital credentials:
+- This use case involves verifying the below credentials:
   - Cornerstone
-  - Address
-  - Vaccine
+  - Physical Address
+  - Contactable
 
 ## Directory structure
 
@@ -15,7 +15,7 @@ Digital Identity is the identity use case of verifiable credentials as a impleme
 ├── cmd             // server entry point
 ├── deploy          // k8s aws deployment files
 ├── pkg
-│   ├── client      // ACA-py client functions
+│   ├── acapy       // ACA-py client functions
 │   ├── config      // config loading env variables
 │   ├── log         // logger
 │   ├── models      // all dto's

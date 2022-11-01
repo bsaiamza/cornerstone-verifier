@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cornerstone-verifier-configmap
+  namespace: cornerstone-verifier
+data:
+  # acapy variables
+  ACAPY_URL: "http://cornerstone-verifier-agent.cornerstone-verifier.svc.cluster.local:8001" # socket - ?
+  CORNERSTONE_SCHEMA_ID: "BER7WwiAMK9igkiRjPYpEp:2:Cornerstone_Credential:3.0"
+  ADDRESS_SCHEMA_ID: "Y8X9iqAn2kYN5cce3Jgcjp:2:Physical_Address_Credential:3.0"
+  CONTACTABLE_CRED_DEF_ID: "JEMWktUsL4YVuDgcPeTf9:3:CL:56578:default"
+  P_VALUE_YEAR: "2004"
+  # server variables
+  SERVER_ADDRESS: 0.0.0.0:8280
+  # txn counter variables
+  TXN_COUNTER_API: "https://verifier-cntr.iamza-sandbox.com/verifier/submit?payload="
+  TXN_COUNTER_SWITCH: "1"

@@ -17,7 +17,7 @@
 .idea/
 venv/
 
-# Cornerstone Issuer
+# IAMZA Verifier
 # Files
 *.log
 web/package-lock.json

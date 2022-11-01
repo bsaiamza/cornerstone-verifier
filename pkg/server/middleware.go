@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"iamza_verifier/pkg/log"
+	"iamza-verifier/pkg/log"
 )
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc

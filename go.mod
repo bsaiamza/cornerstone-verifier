@@ -1,15 +1,10 @@
-module iamza_verifier
+module iamza-verifier
 
-go 1.18
+go 1.19
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/xhit/go-simple-mail/v2 v2.11.0
-)
-
-require (
-	github.com/go-test/deep v1.0.8 // indirect
-	github.com/stretchr/testify v1.8.0 // indirect
+	github.com/xhit/go-simple-mail/v2 v2.12.0
 )
 
 require (

@@ -14,10 +14,14 @@ var (
 	ServerInfo    *log.Logger
 	ServerError   *log.Logger
 	ServerWarning *log.Logger
+
+	DHAInfo    *log.Logger
+	DHAError   *log.Logger
+	DHAWarning *log.Logger
 )
 
 func init() {
-	verifierLogFile, err := os.OpenFile("iamza_verifier.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	issuerLogFile, err := os.OpenFile("iamza_verifier.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
 		log.Printf("Failed to create iamza_verifier log file: %s", err.Error())
 	}
@@ -26,12 +30,12 @@ func init() {
 		log.Printf("Failed to create server log file: %s", err.Error())
 	}
 
-	vmw := io.MultiWriter(os.Stdout, verifierLogFile)
+	imw := io.MultiWriter(os.Stdout, issuerLogFile)
 	smw := io.MultiWriter(os.Stdout, serverLogFile)
 
-	Info = log.New(vmw, "[INFO]: \t", log.Ldate|log.Ltime|log.Lshortfile)
-	Error = log.New(vmw, "[ERROR]: \t", log.Ldate|log.Ltime|log.Lshortfile)
-	Warning = log.New(vmw, "[WARN]: \t", log.Ldate|log.Ltime|log.Lshortfile)
+	Info = log.New(imw, "[INFO]: \t", log.Ldate|log.Ltime|log.Lshortfile)
+	Error = log.New(imw, "[ERROR]: \t", log.Ldate|log.Ltime|log.Lshortfile)
+	Warning = log.New(imw, "[WARN]: \t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	ServerInfo = log.New(smw, "[INFO]: \t", log.Ldate|log.Ltime|log.Lshortfile)
 	ServerError = log.New(smw, "[ERROR]: \t", log.Ldate|log.Ltime|log.Lshortfile)

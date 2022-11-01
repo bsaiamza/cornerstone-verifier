@@ -19,16 +19,12 @@ func (c *Config) GetAcapyURL() string {
 	return getEnvVarByName("ACAPY_URL")
 }
 
-func (c *Config) GetCornerstoneCredDefID() string {
-	return getEnvVarByName("CORNERSTONE_CRED_DEF_ID")
+func (c *Config) GetCornerstoneSchemaID() string {
+	return getEnvVarByName("CORNERSTONE_SCHEMA_ID")
 }
 
-func (c *Config) GetAddressCredDefID() string {
-	return getEnvVarByName("ADDRESS_CRED_DEF_ID")
-}
-
-func (c *Config) GetVaccineCredDefID() string {
-	return getEnvVarByName("VACCINE_CRED_DEF_ID")
+func (c *Config) GetAddressSchemaID() string {
+	return getEnvVarByName("ADDRESS_SCHEMA_ID")
 }
 
 func (c *Config) GetContactableCredDefID() string {
@@ -61,4 +57,8 @@ func (c *Config) GetTxnCounterAPI() string {
 
 func (c *Config) GetTxnCounterSwitch() string {
 	return getEnvVarByName("TXN_COUNTER_SWITCH")
+}
+
+func (c *Config) GetPValueYear() string {
+	return getEnvVarByName("P_VALUE_YEAR")
 }

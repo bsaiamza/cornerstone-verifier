@@ -6,9 +6,9 @@ import (
 	"io/fs"
 	"net/http"
 
-	"iamza_verifier/pkg/client"
-	"iamza_verifier/pkg/config"
-	"iamza_verifier/pkg/utils"
+	"iamza-verifier/pkg/acapy"
+	"iamza-verifier/pkg/config"
+	"iamza-verifier/pkg/utils"
 
 	"github.com/gorilla/mux"
 )
@@ -16,19 +16,17 @@ import (
 //go:embed build
 var embeddedFiles embed.FS
 
-func NewRouter(config *config.Config, client *client.Client, cache *utils.BigCache) *mux.Router {
+func NewRouter(config *config.Config, acapy *acapy.Client, cache *utils.BigCache) *mux.Router {
 	r := mux.NewRouter()
 
-	path := r.PathPrefix("/api/v1/iamza-verifier").Subrouter()
-	path.HandleFunc("/health", health(config))
-	path.HandleFunc("/connections", listConnections(config, client))
-	path.HandleFunc("/verification-records", listVerificationRecords(config, client))
-	path.HandleFunc("/verify", verifyCredential(config, client, cache))
-	path.HandleFunc("/verify-email", verifyCredentialByEmail(config, client, cache))
-	path.HandleFunc("/verify-cornerstone", verifyCornerstoneCredential(config, client, cache))
-	path.HandleFunc("/verify-cornerstone-email", verifyCornerstoneCredentialByEmail(config, client, cache))
-	path.HandleFunc("/verify-contactable", verifyContactableCredential(config, client, cache))
-	path.HandleFunc("/topic/{topic}/", webhookEvents(config, client, cache))
+	path := r.PathPrefix("/api/v2/iamza-verifier").Subrouter()
+	path.HandleFunc("/verify-cornerstone", verifyCornerstoneCredential(config, acapy, cache))
+	path.HandleFunc("/verify-cornerstone-email", verifyCornerstoneCredentialByEmail(config, acapy, cache))
+	path.HandleFunc("/verify-contactable", verifyContactableCredential(config, acapy, cache))
+	path.HandleFunc("/verify-contactable-email", verifyContactableCredentialByEmail(config, acapy, cache))
+	path.HandleFunc("/verify-address", verifyAddressCredential(config, acapy, cache))
+	path.HandleFunc("/verify-address-email", verifyAddressCredentialByEmail(config, acapy, cache))
+	path.HandleFunc("/topic/{topic}/", webhookEvents(config, acapy, cache))
 
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem()))
 
