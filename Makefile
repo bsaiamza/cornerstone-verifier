@@ -1,10 +1,10 @@
 # docker commands
 build_docker:
-	docker build -t cornerstone-verifier:0.2.0 .
-	docker tag cornerstone-verifier:0.2.0 149875424875.dkr.ecr.af-south-1.amazonaws.com/cornerstone-verifier:0.2.0
+	docker build -t cornerstone-verifier:latest .
+	docker tag cornerstone-verifier:latest 149875424875.dkr.ecr.af-south-1.amazonaws.com/cornerstone-verifier:latest
 
 push_docker:
-	docker push 149875424875.dkr.ecr.af-south-1.amazonaws.com/cornerstone-verifier:0.2.0
+	docker push 149875424875.dkr.ecr.af-south-1.amazonaws.com/cornerstone-verifier:latest
 
 # golang commands
 fmt:

@@ -2,6 +2,7 @@ package acapy
 
 import (
 	"fmt"
+
 	"iamza-verifier/pkg/log"
 	"iamza-verifier/pkg/models"
 )
@@ -41,6 +42,23 @@ func (c *Client) SendContactableProofRequest(request models.ContactableProofRequ
 }
 
 func (c *Client) SendAddressProofRequest(request models.AddressProofRequest) (models.SendProofRequestResponse, error) {
+	var proof models.SendProofRequestResponse
+
+	arg := models.AcapyPostRequest{
+		Endpoint: "/present-proof/send-request",
+		Body:     request,
+		Response: &proof,
+	}
+
+	err := c.post(arg)
+	if err != nil {
+		log.Error.Printf("Failed on ACA-py /present-proof/send-request: %s", err.Error())
+		return models.SendProofRequestResponse{}, err
+	}
+	return proof, nil
+}
+
+func (c *Client) SendVaccineProofRequest(request models.VaccineProofRequest) (models.SendProofRequestResponse, error) {
 	var proof models.SendProofRequestResponse
 
 	arg := models.AcapyPostRequest{

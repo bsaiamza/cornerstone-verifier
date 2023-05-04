@@ -10,6 +10,7 @@ import { IAMZA_VERIFIER_URL, LIGHT_MODE_THEME } from '../../utils/constants'
 const addressURL = IAMZA_VERIFIER_URL + '/verify-address-email'
 const cornerstoneURL = IAMZA_VERIFIER_URL + '/verify-cornerstone-email'
 const contactableURL = IAMZA_VERIFIER_URL + '/verify-contactable-email'
+const vaccineURL = IAMZA_VERIFIER_URL + '/verify-vaccine-email'
 
 const VerifyByEmail = () => {
 	const theme = useTheme()
@@ -73,6 +74,25 @@ const VerifyByEmail = () => {
 		setSubmitting(false)
 	}
 
+	const vaccineEmail = async (values: any) => {
+		setSubmitting(true)
+
+		await toast.promise(
+			axios
+				.post(vaccineURL, values)
+				.then((response: any) => {
+					toast.success('Emailed proof request!')
+				})
+				.catch((error: any) => {
+					toast.error(error.response.data.msg)
+				}),
+			{
+				pending: 'Emailing proof request...',
+			}
+		)
+		setSubmitting(false)
+	}
+
 	return (
 		<Grid container>
 			<Grid item xs={0} md={3} />
@@ -99,6 +119,8 @@ const VerifyByEmail = () => {
 								? cornerstoneEmail(values)
 								: '' || credential === 'contactable'
 								? contactableEmail(values)
+								: '' || credential === 'vaccine'
+								? vaccineEmail(values)
 								: ''
 						}}>
 						{({ values, handleChange }) => (
@@ -118,8 +140,9 @@ const VerifyByEmail = () => {
 											required
 											sx={{ m: '1rem' }}>
 											<MenuItem value='address'>Address</MenuItem>
-											<MenuItem value='contactable'>Contactable</MenuItem>
+											{/* <MenuItem value='contactable'>Contactable</MenuItem> */}
 											<MenuItem value='cornerstone'>Cornerstone</MenuItem>
+											<MenuItem value='vaccine'>Vaccine</MenuItem>
 										</Select>
 									</FormControl>
 								</div>

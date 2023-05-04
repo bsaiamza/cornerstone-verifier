@@ -14,8 +14,9 @@ data:
   ACAPY_DEBUG_CONNECTIONS: "true"
   ACAPY_ENDPOINT: "https://verifier-agent.iamza-sandbox.com"
   ACAPY_LABEL: "Iamza Verifier"
-  ACAPY_GENESIS_URL: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_builder_genesis"
-  ACAPY_WALLET_NAME: "issuer_wallet"
+  ACAPY_GENESIS_URL: "https://raw.githubusercontent.com/Indicio-tech/indicio-network/main/genesis_files/pool_transactions_demonet_genesis"
+  # ACAPY_GENESIS_URL: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_builder_genesis"
+  ACAPY_WALLET_NAME: "verifier_wallet"
   #  ACAPY_WALLET_KEY: ""
   ACAPY_WALLET_TYPE: "indy"
   ACAPY_WALLET_STORAGE_TYPE: postgres_storage

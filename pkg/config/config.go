@@ -4,8 +4,7 @@ import (
 	"os"
 )
 
-type Config struct {
-}
+type Config struct{}
 
 func LoadConfig() *Config {
 	return &Config{}
@@ -25,6 +24,10 @@ func (c *Config) GetCornerstoneSchemaID() string {
 
 func (c *Config) GetAddressSchemaID() string {
 	return getEnvVarByName("ADDRESS_SCHEMA_ID")
+}
+
+func (c *Config) GetVaccineSchemaID() string {
+	return getEnvVarByName("VACCINE_SCHEMA_ID")
 }
 
 func (c *Config) GetContactableCredDefID() string {

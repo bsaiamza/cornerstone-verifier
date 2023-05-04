@@ -26,6 +26,8 @@ func NewRouter(config *config.Config, acapy *acapy.Client, cache *utils.BigCache
 	path.HandleFunc("/verify-contactable-email", verifyContactableCredentialByEmail(config, acapy, cache))
 	path.HandleFunc("/verify-address", verifyAddressCredential(config, acapy, cache))
 	path.HandleFunc("/verify-address-email", verifyAddressCredentialByEmail(config, acapy, cache))
+	path.HandleFunc("/verify-vaccine", verifyVaccineCredential(config, acapy, cache))
+	path.HandleFunc("/verify-vaccine-email", verifyVaccineCredentialByEmail(config, acapy, cache))
 	path.HandleFunc("/topic/{topic}/", webhookEvents(config, acapy, cache))
 
 	r.PathPrefix("/").Handler(http.FileServer(getFileSystem()))

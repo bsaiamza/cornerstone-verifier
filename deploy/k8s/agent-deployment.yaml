@@ -45,7 +45,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cornerstoneverifiersecret
-                  key: acapywalletstoragecred                
+                  key: acapywalletstoragecred
           command: [
               "/bin/bash",
               "-c",

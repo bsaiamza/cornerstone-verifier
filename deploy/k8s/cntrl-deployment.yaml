@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: cornerstone-verifier
-          image: 149875424875.dkr.ecr.af-south-1.amazonaws.com/cornerstone-verifier:0.2.0
+          image: 149875424875.dkr.ecr.af-south-1.amazonaws.com/cornerstone-verifier:latest
           imagePullPolicy: Always
           ports:
             - name: server-port

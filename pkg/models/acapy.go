@@ -95,6 +95,12 @@ type AddressProofRequest struct {
 	PresentationRequest AddressPresentationRequest `json:"proof_request"`
 }
 
+type VaccineProofRequest struct {
+	Comment             string                     `json:"comment"`
+	ConnectionID        string                     `json:"connection_id"`
+	PresentationRequest VaccinePresentationRequest `json:"proof_request"`
+}
+
 type CornerstonePresentationRequest struct {
 	Name                string                         `json:"name"`
 	Version             string                         `json:"version"`
@@ -116,13 +122,20 @@ type AddressPresentationRequest struct {
 	RequestedPredicates AddressRequestedPredicates `json:"requested_predicates"`
 }
 
+type VaccinePresentationRequest struct {
+	Name                string                     `json:"name"`
+	Version             string                     `json:"version"`
+	RequestedAttributes VaccineRequestedAttributes `json:"requested_attributes,omitempty"`
+	RequestedPredicates VaccineRequestedPredicates `json:"requested_predicates"`
+}
+
 type CornerstoneRequestedAttributes struct {
 	The0_NamesUUID   interface{} `json:"0_names_uuid,omitempty"`
 	The0_SurnameUUID interface{} `json:"0_surname_uuid,omitempty"`
 }
 
 type CornerstoneRequestedPredicates struct {
-	The0_AgeGEUUID interface{} `json:"0_age_GE_uuid,omitempty"`
+	The0_AgeLEUUID interface{} `json:"0_age_LE_uuid,omitempty"`
 }
 
 type ContactableRequestedAttributes struct {
@@ -139,15 +152,22 @@ type ContactableRequestedAttributes struct {
 	The0_identityDocumentUUID interface{} `json:"0_identityDocument_uuid,omitempty"`
 }
 
-type ContactableRequestedPredicates struct {
-}
+type ContactableRequestedPredicates struct{}
 
 type AddressRequestedAttributes struct {
 	The0_StatementDateUUID interface{} `json:"0_statement_date_uuid,omitempty"`
 	The0_SelfAttestedUUID  interface{} `json:"0_self_attested_uuid,omitempty"`
 }
 
+type VaccineRequestedAttributes struct {
+	The0_VaccineTypeUUID interface{} `json:"0_vaccine_type_uuid,omitempty"`
+}
+
 type AddressRequestedPredicates struct {
+	The0_ExpirationGEUUID interface{} `json:"0_expiration_GE_uuid,omitempty"`
+}
+
+type VaccineRequestedPredicates struct {
 	The0_ExpirationGEUUID interface{} `json:"0_expiration_GE_uuid,omitempty"`
 }
 
@@ -169,8 +189,7 @@ type RequestedAttributes struct {
 	The0_SurnameUUID interface{} `json:"0_surname_uuid,omitempty"`
 }
 
-type RequestedPredicates struct {
-}
+type RequestedPredicates struct{}
 
 type SendProofRequestResponse struct {
 	AutoPresent              bool                     `json:"auto_present,omitempty"`
@@ -373,8 +392,7 @@ type Data struct {
 	Sha256 string   `json:"sha256,omitempty"`
 }
 
-type JSON struct {
-}
+type JSON struct{}
 
 type Jws struct {
 	Header     Header       `json:"header,omitempty"`
